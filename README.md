@@ -55,6 +55,7 @@ Gmail (Final Output Delivery)
 ---
 
 ## 📁 Project Structure
+```
 ai-blog-generator-n8n/
 │
 ├── README.md
@@ -65,7 +66,7 @@ ai-blog-generator-n8n/
 │ ├── email-output.png
 │ ├── generated-image.png
 │
-
+```
 
 ---
 
