@@ -1,0 +1,314 @@
+{
+  "name": "Demo Video to Blog Generator",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1200,
+        -960
+      ],
+      "id": "7ab0fa5c-288b-4c6f-ad63-c9d25161b3d3",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "f7bbd626-c82d-40af-8630-d0022a8a035b",
+              "name": "YouTube Video Url",
+              "value": "https://youtu.be/XEKgqy5-U_s?si=F7sEsZiV6iwItg4v",
+              "type": "string"
+            },
+            {
+              "id": "a150f779-0d61-4226-9154-381b65a04cc1",
+              "name": "Recipient Email Address ",
+              "value": "dassagor888@gmail.com",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -992,
+        -960
+      ],
+      "id": "8b556129-f54b-4e80-b7d5-a1d75a95d2ea",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "url": "https://api.supadata.ai/v1/youtube/transcript",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{ $json['YouTube Video Url'] }}"
+            },
+            {
+              "name": "text",
+              "value": "true"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "sd_74e93a34120708cc6268c459e2cad7a3"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "videoUrl",
+              "value": "={{ $json['YouTube Video Url'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -800,
+        -960
+      ],
+      "id": "fc41f03c-df5d-462e-bcbb-8cddab016ec6",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Write a detailed SEO-optimized blog post using the provided YouTube video transcript.\n\nUse the transcript content as the foundation for the blog, extracting key ideas, topics, and themes to highlight. Ensure the blog post is structured with clear headings, subheadings, and paragraphs, incorporating SEO keywords naturally. The tone should be engaging and informative, targeted towards readers interested in the video's subject matter.\n\n- Identify the main topics and themes of the transcript.\n- Extract key points, arguments, or stories present in the transcript.\n- Determine suitable SEO keywords related to the content and integrate them meaningfully.\n- Craft a title that is both engaging and SEO-friendly.\n- Write a comprehensive and well-structured blog post with an introduction, body, and conclusion.\n- Use bullet points, lists, or numbers if necessary for clarity and readability.\n\n# Steps\n\n1. **Transcript Analysis**: Begin by thoroughly reading the provided transcript to understand the core messages and detailed content.\n   \n2. **Identify Key Points**: Extract important points, arguments, or themes that should be highlighted in the blog post.\n\n3. **SEO Keyword Research**: Determine relevant SEO keywords that align with the content’s themes and audiences.\n\n4. **Blog Structuring**: Create an outline for the blog post, arranging sections logically with appropriate headings (H2, H3) for SEO.\n\n5. **Content Writing**: Write each section based on the transcript’s content, ensuring the inclusion of SEO keywords and maintaining a clear and engaging tone.\n\n6. **Review and Edit**: Proofread for grammatical accuracy and SEO optimization. Ensure smooth flow and coherence.\n\n# Output Format\n\nRespond in the following JSON format:\n```json\n{\n  \"subject\": \"Why Great Learners Make the Best Leaders\",\n  \"preheader\": \"Learning + teaching = compounding growth.\",\n  \"html\": \"<!doctype html><html>...INLINE-CSS + EMAIL-SAFE TABLE LAYOUT...</html>\",\n  \"text\": \"Plain-text fallback here…\"\n}\n\n```\n\n- Title: Craft an SEO-friendly engaging title.\n- Blog Image Prompt: Provide a textual prompt that can be used to generate an image relevant to the blog post content. We prefer human first images with text.\n- Description: Summarize the blog post in a concise and engaging way.\n- Content: Write a comprehensive blog using the transcript as reference, structured with clear headings and engaging content.\n\n# Examples\n\n### Input\n[YouTube Transcript]\n\n### Output\n```json\n{\n  \"title\": \"Understanding Renewable Energy: A Path to Sustainability\",\n  \"blogImagePrompt\": \"An illustration of various renewable energy sources like solar panels and wind turbines with a man / women.”,\n  \"description\": \"Explore the importance and impact of renewable energy on our planet. This blog delves into key themes and actionable insights from the transcript, providing a comprehensive understanding of sustainable energy solutions.\",\n  \"html\": \"<!doctype html><html>...INLINE-CSS + EMAIL-SAFE TABLE LAYOUT...</html>\"\n}\n```\n\n(This example reflects the JSON structure. Use real content from the transcript to fill these sections.)\n"
+            },
+            {
+              "content": "={{ $json.content }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -624,
+        -960
+      ],
+      "id": "4b5bb709-997b-4c64-8d8a-7fe0d047b91a",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "VFt7fkBjDDpNz3fk",
+          "name": "Google Gemini(PaLM) Api account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// This looks for the first text it can find in the incoming data\nconst input = $input.first().json;\nconst rawText = input.text || input.content?.parts?.[0]?.text || input.content;\n\nif (!rawText) {\n  throw new Error(\"Could not find any text to parse. Check the Gemini node output.\");\n}\n\n// This cleans up any markdown code blocks (```json) Gemini might have added\nconst cleanText = rawText.replace(/```json|```/g, \"\").trim();\n\nreturn JSON.parse(cleanText);\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -336,
+        -960
+      ],
+      "id": "5a352839-f9d7-4bc2-8550-acb3b7e3a107",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Edit Fields').item.json['Recipient Email Address '] }}",
+        "subject": "={{ $('Code in JavaScript').item.json.title }}",
+        "message": "={{ $('Code in JavaScript').item.json.html }}",
+        "options": {
+          "appendAttribution": false,
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {}
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        304,
+        -960
+      ],
+      "id": "00695f50-095b-4f26-a5e5-960327d89f7b",
+      "name": "Send a message",
+      "webhookId": "6a781b3c-031d-44e4-8076-0b9d4c7320f3",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "bKisF5ZshMU1Tks9",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.stability.ai/v2beta/stable-image/generate/core",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer sk-w73UAm0fK0ouwa8xC4Eenj6rvBCqpD9FMyWPfZVqJfFdZ0vq"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "prompt",
+              "value": "={{$json.blogImagePrompt}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -128,
+        -960
+      ],
+      "id": "5f25c612-02af-4ba5-8155-49dc5df12ff1",
+      "name": "HTTP Request1"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "return {\n  json: $json,\n  binary: {\n    data: {\n      data: $json.image,\n      mimeType: 'image/png',\n      fileName: 'blog.png'\n    }\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        80,
+        -960
+      ],
+      "id": "378ee285-9199-49eb-8b87-0ead73239450",
+      "name": "Code in JavaScript1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "8ccf7b67-c269-4aee-8abb-453d28d70f42",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "8ee5ba2867bc5c5235c49f59f64c9d6f22f98c655c2910367dab59ade9fa2882"
+  },
+  "id": "qNlnvXLnAlFoToBm",
+  "tags": []
+}
