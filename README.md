@@ -39,6 +39,7 @@ This system eliminates manual blogging and enables **1-click content repurposing
 ---
 
 ## 🏗️ System Architecture
+```
 YouTube Video
 ↓
 Supadata API (Transcript Extraction)
@@ -50,7 +51,7 @@ Stability AI (Image Generation)
 n8n Workflow Processing
 ↓
 Gmail (Final Output Delivery)
-
+```
 
 ---
 
